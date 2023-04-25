@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Add Sensor</h2>
+    <form action="{{ url_for('add_sensor') }}" method="post">
+        {{ form.csrf_token }}
+        <div class="mb-3">
+            <label for="{{ form.name.id }}" class="form-label">Sensor Name</label>
+            {{ form.name(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.ip.id }}" class="form-label">Sensor IP</label>
+            {{ form.ip(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Add Sensor</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Register</h2>
+    <form action="{{ url_for('register') }}" method="post">
+        {{ form.csrf_token }}
+        <div class="mb-3">
+            <label for="{{ form.username.id }}" class="form-label">Username</label>
+            {{ form.username(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.email.id }}" class="form-label">Email</label>
+            {{ form.email(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            <label for="{{ form.password.id }}" class="form-label">Password</label>
+            {{ form.password(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+{% endblock %}

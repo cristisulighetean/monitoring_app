@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .table td {
+        vertical-align: middle;
+    }
+</style>
+{% if sensors %}
+    <h2>Dashboard</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Sensor Name</th>
+                <th scope="col">IP</th>
+                <th scope="col">Sensor Measurement</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sensor in sensors %}
+                <tr>
+                    <td>{{ sensor.name }}</td>
+                    <td>{{ sensor.ip }}</td>
+                    <td><span id="sensor-data-{{ sensor.id }}"></span></td>
+                    <td>
+                        <a href="{{ url_for('reset_sensor', sensor_id=sensor.id) }}" class="btn btn-warning">Reset</a>
+                        <a href="{{ url_for('restart_sensor', sensor_id=sensor.id) }}" class="btn btn-info">Restart</a>
+                        <a href="{{ url_for('delete_sensor', sensor_id=sensor.id) }}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h2>No sensors registered</h2>
+{% endif %}
+<div class="d-flex justify-content-center mb-3">
+    <a href="{{ url_for('add_sensor') }}" class="btn btn-primary">Add Sensor</a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Get all sensor IDs and IPs
+    var sensors = [
+        {% for sensor in sensors %}
+            {id: {{ sensor.id }}, ip: '{{ sensor.ip }}'},
+        {% endfor %}
+    ];
+
+    // Function to fetch data from a sensor and update the corresponding HTML element
+    function updateSensorData(sensorId, sensorIp) {
+    fetch(`http://${sensorIp}/data`)
+        .then(response => response.json())
+        .then(data => {
+            // Extract values and units from the JSON object
+            const temp = data.temp.data;
+            const tempUnit = data.temp.unit;
+            const pressure = data.pressure.data;
+            const pressureUnit = data.pressure.unit;
+            const tvoc = data.tvoc.data;
+            const tvocUnit = data.tvoc.unit;
+            const eco2 = data.eco2.data;
+            const eco2Unit = data.eco2.unit;
+
+            // Format the values and units as a string
+            const formattedData = `Temperature: ${temp} ${tempUnit}<br>` +
+                                  `Pressure: ${pressure} ${pressureUnit}<br>` +
+                                  `TVOC: ${tvoc} ${tvocUnit}<br>` +
+                                  `eCO2: ${eco2} ${eco2Unit}`;
+
+            // Update the sensor data HTML element with the formatted data
+            var sensorDataElement = document.getElementById(`sensor-data-${sensorId}`);
+            sensorDataElement.innerHTML = formattedData;
+        })
+        .catch(error => {
+            // Handle errors when fetching sensor data
+            console.error(`Error fetching data from sensor ${sensorId}: ${error}`);
+            var sensorDataElement = document.getElementById(`sensor-data-${sensorId}`);
+            sensorDataElement.textContent = 'Error fetching data';
+        });
+    }
+
+
+    // Fetch data from all registered sensors every 5 seconds
+    setInterval(() => {
+        sensors.forEach(sensor => {
+            updateSensorData(sensor.id, sensor.ip);
+        });
+    }, 5000);
+});
+</script>
+
+{% endblock %}
