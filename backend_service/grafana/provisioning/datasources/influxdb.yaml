@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    url: http://influxdb:8086
+    access: proxy
+    database: sensor_data
+    user: influxdb_user
+    password: influxdb_password
+    editable: false

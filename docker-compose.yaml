@@ -1,0 +1,78 @@
+version: '3.9'
+
+services:
+  dashboard_app:
+    build: ./dashboard_app
+    ports:
+      - "5010:5010"
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - DATABASE_USER=dashboard_user
+      - DATABASE_PASSWORD=dashboard_password
+      - DATABASE_NAME=dashboard_db
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - SECRET_KEY=dashboard_secret
+    volumes:
+      - ./dashboard_app:/app/src
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=dashboard_user
+      - POSTGRES_PASSWORD=dashboard_password
+      - POSTGRES_DB=dashboard_db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  
+  backend_service:
+    build: ./backend_service
+    environment:
+      - DATABASE_USER=dashboard_user
+      - DATABASE_PASSWORD=dashboard_password
+      - DATABASE_NAME=dashboard_db
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_USERNAME=influxdb_user
+      - INFLUXDB_PASSWORD=influxdb_password
+      - INFLUXDB_DATABASE=sensor_data
+    depends_on:
+      - db
+      - influxdb
+
+  influxdb:
+    image: influxdb:1.8
+    environment:
+      - INFLUXDB_DB=sensor_data
+      - INFLUXDB_USER=influxdb_user
+      - INFLUXDB_USER_PASSWORD=influxdb_password
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+
+  grafana:
+    image: grafana/grafana:8.1.5
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_DATABASE_TYPE=sqlite3
+      - GF_DATABASE_PATH=/var/lib/grafana/grafana.db
+      - GF_DATASOURCES_DEFAULT_PATH=/etc/grafana/provisioning/datasources
+      - GF_DASHBOARDS_DEFAULT_PATH=/etc/grafana/provisioning/dashboards
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./backend_service/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - influxdb
+
+volumes:
+  db-data:
+  influxdb-data:
+  grafana-data:

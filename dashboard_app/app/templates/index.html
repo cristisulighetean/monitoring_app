@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update the sensor data HTML element with the formatted data
             var sensorDataElement = document.getElementById(`sensor-data-${sensorId}`);
-            sensorDataElement.innerHTML = formattedData;
+            sensorDataElement.innerHTML = formattedData || "No data available";
         })
         .catch(error => {
             // Handle errors when fetching sensor data
