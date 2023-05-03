@@ -14,7 +14,7 @@ services:
       - DATABASE_PORT=5432
       - SECRET_KEY=dashboard_secret
     volumes:
-      - ./dashboard_app:/app/src
+      - ./dashboard_app:/app
     depends_on:
       - db
 
