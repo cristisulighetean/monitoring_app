@@ -1,5 +1,4 @@
 version: '3.9'
-
 services:
   dashboard_app:
     build: ./dashboard_app
@@ -42,6 +41,7 @@ services:
       - INFLUXDB_PASSWORD=influxdb_password
       - INFLUXDB_DATABASE=sensor_data
     depends_on:
+      - dashboard_app
       - db
       - influxdb
 
