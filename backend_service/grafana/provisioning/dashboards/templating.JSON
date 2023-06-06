@@ -1,0 +1,29 @@
+"templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "isNone": true,
+          "selected": false,
+          "text": "None",
+          "value": ""
+        },
+        "datasource": null,
+        "definition": "",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "query0",
+        "options": [],
+        "query": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+},
