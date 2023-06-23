@@ -2,7 +2,7 @@ version: '3.9'
 services:
   dashboard_app:
     build: ./dashboard_app
-    restart: on-failure
+    restart: unless-stopped
     ports:
       - "5010:5010"
     environment:
@@ -21,7 +21,7 @@ services:
 
   db:
     image: postgres:13
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=dashboard_user
       - POSTGRES_PASSWORD=dashboard_password
@@ -31,7 +31,7 @@ services:
   
   backend_service:
     build: ./backend_service
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - DATABASE_USER=dashboard_user
       - DATABASE_PASSWORD=dashboard_password
@@ -50,7 +50,7 @@ services:
 
   influxdb:
     image: influxdb:1.8
-    restart: on-failure
+    restart: unless-stopped
     environment:
       - INFLUXDB_DB=sensor_data
       - INFLUXDB_USER=influxdb_user
@@ -60,7 +60,7 @@ services:
 
   grafana:
     image: grafana/grafana:8.1.5
-    restart: on-failure
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
